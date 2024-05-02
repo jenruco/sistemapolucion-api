@@ -28,10 +28,10 @@ class APIServer(BaseHTTPRequestHandler):
     def conectar_bd(self):
         try:
             self.conexion = psycopg2.connect(
-                dbname='Sistema_polution',
-                user='postgres',
-                password='Wilson2000',
-                host='localhost',
+                dbname='calidad_data',
+                user='calidad_data_user',
+                password='eCPQP0qGUi7rjax6TDxftu76u1JfZSdH',
+                host='dpg-copvq0q1hbls73dn7o3g-a',
                 port='5432'
             )
             return self.conexion
