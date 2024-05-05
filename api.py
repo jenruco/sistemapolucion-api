@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import pytz
 import re
 import psycopg2
 import decimal
@@ -31,7 +32,7 @@ class APIServer(BaseHTTPRequestHandler):
                 dbname='calidad_data',
                 user='calidad_data_user',
                 password='eCPQP0qGUi7rjax6TDxftu76u1JfZSdH',
-                host='dpg-copvq0q1hbls73dn7o3g-a',
+                host='oregon-postgres.render.com',
                 port='5432'
             )
             return self.conexion
@@ -65,7 +66,9 @@ class APIServer(BaseHTTPRequestHandler):
                 humedad = data.get('humedad')
                 dioxido_carbono = data.get('dioxido_carbono')
                 gas_propano = data.get('gas_propano')
-                fe_creacion = datetime.now()
+                #fe_creacion = datetime.now()
+                zona_horaria = pytz.timezone("America/Guayaquil")
+                fe_creacion = datatime.now().astimezone(zona_horaria)
                 cursor.execute("INSERT INTO data_calidad (monoxido_carbono, humedad, temperatura, dioxido_carbono, presion_admosferica, fe_creacion, gas_propano) VALUES (%s,%s,%s,%s,%s,%s,%s)", (monoxido_carbono, humedad, temperatura, dioxido_carbono, 0, fe_creacion, gas_propano))
                 
                 conn.commit()
@@ -86,7 +89,7 @@ class APIServer(BaseHTTPRequestHandler):
                 # Construir la respuesta JSON
                 response = {'status': 'OK', 'data_received': temperatura}
                 json_response = json.dumps(response)
-
+                print("Llega ingresa")
                 # Enviar la respuesta
                 self.wfile.write(json_response.encode('utf-8'))
             except Exception as e:
