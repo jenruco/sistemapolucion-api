@@ -70,7 +70,7 @@ class APIServer(BaseHTTPRequestHandler):
                 #fe_creacion = datetime.now()
                 zona_horaria = pytz.timezone("America/Guayaquil")
                 fe_creacion = datetime.now().astimezone(zona_horaria)
-                cursor.execute("INSERT INTO data_calidad (monoxido_carbono, humedad, temperatura, dioxido_carbono, altitud_mar, gas_propano) VALUES (%s,%s,%s,%s,%s,%s)", (monoxido_carbono, humedad, temperatura, dioxido_carbono, altitud_mar, gas_propano))
+                cursor.execute("INSERT INTO data_calidad (monoxido_carbono, humedad, temperatura, dioxido_carbono, altitud, gas_propano) VALUES (%s,%s,%s,%s,%s,%s)", (monoxido_carbono, humedad, temperatura, dioxido_carbono, altitud_mar, gas_propano))
                 print(fe_creacion)
                 conn.commit()
                 
@@ -122,7 +122,7 @@ class APIServer(BaseHTTPRequestHandler):
                         'humedad': registro[1],
                         'dioxido_carbono': registro[2],
                         'temperatura': registro[3],
-                        'presion_admosferica': registro[4],
+                        'altitud_mar': registro[4],
                         'gas_propano': registro[7]
                         
                     }
