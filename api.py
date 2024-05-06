@@ -17,7 +17,8 @@ class APIServer(BaseHTTPRequestHandler):
         self.conexion = None
 
     def end_headers(self):
-        self.send_header('Access-Control-Allow-Origin', 'https://stellular-fox-1c153b.netlify.app')
+        #self.send_header('Access-Control-Allow-Origin', 'https://stellular-fox-1c153b.netlify.app')
+        self.send_header('Access-Control-Allow-Origin', 'http://localhost:4200')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         BaseHTTPRequestHandler.end_headers(self)
@@ -67,10 +68,12 @@ class APIServer(BaseHTTPRequestHandler):
                 dioxido_carbono = data.get('dioxido_carbono')
                 gas_propano = data.get('gas_propano')
                 altitud_mar = data.get('altitud_mar')
+                nodo = data.get('nodo')
+                print(nodo)
                 #fe_creacion = datetime.now()
                 zona_horaria = pytz.timezone("America/Guayaquil")
                 fe_creacion = datetime.now().astimezone(zona_horaria)
-                cursor.execute("INSERT INTO data_calidad (monoxido_carbono, humedad, temperatura, dioxido_carbono, altura_nivel_mar, gas_propano) VALUES (%s,%s,%s,%s,%s,%s)", (monoxido_carbono, humedad, temperatura, dioxido_carbono, altitud_mar, gas_propano))
+                cursor.execute("INSERT INTO data_calidad (monoxido_carbono, humedad, temperatura, dioxido_carbono, altura_nivel_mar, gas_propano, nodo) VALUES (%s,%s,%s,%s,%s,%s,%s)", (monoxido_carbono, humedad, temperatura, dioxido_carbono, altitud_mar, gas_propano, nodo))
                 print(fe_creacion)
                 conn.commit()
                 
@@ -149,13 +152,22 @@ class APIServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))
 
-        elif self.path == '/obtener_registros_hoy':
+        #parsed_url = urlparse(self.path)  # Descomponer la URL
+        #path = parsed_url.path  # Obtener la parte de la ruta
+        #query_params = parse_qs(parsed_url.query)  # Extraer los parámetros de la cadena de consulta
+
+        if self.path == '/obtener_registros_hoy':
+             #tipo = query_params.get('tipo', [''])[0] 
             try:
                 conn = self.conectar_bd()
                 cursor = conn.cursor()
-
+                #if tipo == 'especial':
+                    # Ejemplo de consulta personalizada
+                  #cursor.execute("SELECT humedad, temperatura, monoxido_carbono, fe_creacion FROM data_calidad WHERE fe_creacion::date = now() AND monoxido_carbono > 1 ORDER BY fe_creacion ASC;")
+                #else:
+                    
                 # Consulta para obtener el último registro ingresado
-                cursor.execute("select humedad, temperatura, monoxido_carbono, fe_creacion from data_calidad WHERE fe_creacion::date = CURRENT_DATE order by fe_creacion asc;")
+                cursor.execute("select humedad, temperatura, monoxido_carbono, fe_creacion, dioxido_carbono from data_calidad WHERE fe_creacion::date = CURRENT_DATE order by fe_creacion asc;")
                 registros = cursor.fetchall()
 
                 if registros:
@@ -173,7 +185,8 @@ class APIServer(BaseHTTPRequestHandler):
                             'humedad': registro_list[0],
                             'temperatura': registro_list[1],
                             'monoxido_carbono' : registro_list[2],
-                            'fe_creacion': registro_list[3].strftime("%Y-%m-%d %H:%M:%S")  # Formatear la fecha
+                            'fe_creacion': registro_list[3].strftime("%Y-%m-%d %H:%M:%S"),  # Formatear la fecha
+                            'dioxido_carbono' : registro [4]
                         }
                         response.append(registro_json)
 
