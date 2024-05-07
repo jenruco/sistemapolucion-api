@@ -18,8 +18,8 @@ class APIServer(BaseHTTPRequestHandler):
         self.conexion = None
 
     def end_headers(self):
-        #self.send_header('Access-Control-Allow-Origin', 'https://stellular-fox-1c153b.netlify.app')
-        self.send_header('Access-Control-Allow-Origin', 'http://localhost:4200')
+        self.send_header('Access-Control-Allow-Origin', 'https://stellular-fox-1c153b.netlify.app')
+        #self.send_header('Access-Control-Allow-Origin', 'http://localhost:4200')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         BaseHTTPRequestHandler.end_headers(self)
