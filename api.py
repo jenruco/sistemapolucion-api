@@ -18,8 +18,8 @@ class APIServer(BaseHTTPRequestHandler):
         self.conexion = None
 
     def end_headers(self):
-        self.send_header('Access-Control-Allow-Origin', 'https://stellular-fox-1c153b.netlify.app')
-        #self.send_header('Access-Control-Allow-Origin', 'http://localhost:4200')
+        #self.send_header('Access-Control-Allow-Origin', 'https://stellular-fox-1c153b.netlify.app')
+        self.send_header('Access-Control-Allow-Origin', 'http://localhost:4200')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         BaseHTTPRequestHandler.end_headers(self)
@@ -82,11 +82,10 @@ class APIServer(BaseHTTPRequestHandler):
                 cursor.close()
                 self.desconectar_bd()
                 print(monoxido_carbono)
-                limite1 = "200"
-                limite2 = "600"
-                if int(monoxido_carbono) > limite1:
+               
+                if int(monoxido_carbono) > 100:
                     self.enviar_correo_alerta(temperatura, monoxido_carbono, humedad, dioxido_carbono, gas_propano)
-                elif int (dioxido_carbono) > limite2:
+                elif int (dioxido_carbono) > 120:
                     self.enviar_correo_alerta(temperatura, monoxido_carbono, humedad, dioxido_carbono, gas_propano)
                     
                 # Configurar las cabeceras de respuesta
@@ -115,12 +114,12 @@ class APIServer(BaseHTTPRequestHandler):
         if path == '/obtener_registro':
             try:
                 query_params = parse_qs(parsed_url.query)
-                tipo = query_params.get('nodo', [None])[0]
+                nodo = query_params.get('nodo', [None])[0]
                 conn = self.conectar_bd()
                 cursor = conn.cursor()
 
                 # Consulta para obtener el último registro ingresado
-                cursor.execute("SELECT * FROM data_calidad where nodo = "+tipo+" order by id desc LIMIT 1")
+                cursor.execute("SELECT * FROM data_calidad where nodo = "+nodo+" order by id desc LIMIT 1")
                 registro = cursor.fetchone()
                 if registro:
                     registro = list(registro)
@@ -162,19 +161,23 @@ class APIServer(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))
 
         elif path == '/obtener_registros_hoy':
-             #tipo = query_params.get('tipo', [''])[0] 
             try:
+                query_params = parse_qs(parsed_url.query)
+                nodo = query_params.get('nodo', [None])[0]
+                fe_inicio = query_params.get('fe_inicio', [None])[0]
+                fe_fin = query_params.get('fe_fin', [None])[0]
+
                 conn = self.conectar_bd()
                 cursor = conn.cursor()
-                #if tipo == 'especial':
-                    # Ejemplo de consulta personalizada
-                  #cursor.execute("SELECT humedad, temperatura, monoxido_carbono, fe_creacion FROM data_calidad WHERE fe_creacion::date = now() AND monoxido_carbono > 1 ORDER BY fe_creacion ASC;")
-                #else:
-                    
-                # Consulta para obtener el último registro ingresado
-                cursor.execute("select humedad, temperatura, monoxido_carbono, fe_creacion, dioxido_carbono from data_calidad WHERE fe_creacion::date = (SELECT date(TIMEZONE('America/Guayaquil', CURRENT_DATE))) order by fe_creacion asc;")
-                registros = cursor.fetchall()
 
+                #zona_horaria = pytz.timezone("America/Guayaquil")
+                #fe_creacion = datetime.now().astimezone(zona_horaria)
+                
+                # Consulta para obtener el último registro ingresado
+                cursor.execute("select humedad, gas_propano, monoxido_carbono, TIMEZONE('America/Guayaquil', fe_creacion), dioxido_carbono from data_calidad WHERE date(TIMEZONE('America/Guayaquil', fe_creacion)) between %s and %s and nodo = %s order by fe_creacion asc;", (fe_inicio, fe_fin, nodo))
+                #cursor.execute("SELECT date(TIMEZONE('America/Guayaquil', CURRENT_DATE));")
+                registros = cursor.fetchall()
+                
                 if registros:
                     # Convertir los registros a formato JSON
                     response = []
@@ -187,14 +190,16 @@ class APIServer(BaseHTTPRequestHandler):
 
                         # Construir la respuesta JSON para cada registro
                         registro_json = {
-                            'humedad': registro_list[0],
-                            'temperatura': registro_list[1],
+                            
+                            'propano' : registro_list[1],
                             'monoxido_carbono' : registro_list[2],
                             'fe_creacion': registro_list[3].strftime("%Y-%m-%d %H:%M:%S"),  # Formatear la fecha
                             'dioxido_carbono' : registro_list[4]
                         }
+                        
                         response.append(registro_json)
-
+                    
+                                          
                     # Configurar las cabeceras de respuesta
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
