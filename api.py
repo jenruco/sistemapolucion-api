@@ -83,9 +83,9 @@ class APIServer(BaseHTTPRequestHandler):
                 self.desconectar_bd()
                 print(monoxido_carbono)
                
-                if int(monoxido_carbono) > 100:
+                if int(monoxido_carbono) > 150:
                     self.enviar_correo_alerta(temperatura, monoxido_carbono, humedad, dioxido_carbono, gas_propano)
-                elif int (dioxido_carbono) > 120:
+                elif int (dioxido_carbono) > 150:
                     self.enviar_correo_alerta(temperatura, monoxido_carbono, humedad, dioxido_carbono, gas_propano)
                     
                 # Configurar las cabeceras de respuesta
