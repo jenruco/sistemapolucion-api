@@ -284,7 +284,7 @@ class APIServer(BaseHTTPRequestHandler):
         sender_email = 'wilsonperezgarcia2000@gmail.com'
         password = 'prak rdzd jzcr abwb'
         
-        correos = ['wperezg@uteq.edu.ec', 'henry_5198@hotmail.com', 'amoranc5@uteq.edu.ec', 'kguerrero@uteq.edu.ec','nsalinasb@uteq.edu.ec','atorres@uteq.edu.ec',]
+        correos = ['wperezg@uteq.edu.ec', 'henry_5198@hotmail.com', 'amoranc5@uteq.edu.ec', 'kguerrero@uteq.edu.ec','nsalinasb@uteq.edu.ec','atorres@uteq.edu.ec']
         # Crea el objeto del mensaje
         message = MIMEMultipart()
         message['From'] = 'wilsonperezgarcia2000@gmail.com'
