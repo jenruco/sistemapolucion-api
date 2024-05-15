@@ -284,7 +284,7 @@ class APIServer(BaseHTTPRequestHandler):
         sender_email = 'wilsonperezgarcia2000@gmail.com'
         password = 'prak rdzd jzcr abwb'
         
-        correos = ['wperezg@uteq.edu.ec', 'henry_5198@hotmail.com']
+        correos = ['wperezg@uteq.edu.ec', 'henry_5198@hotmail.com', 'amoranc5@uteq.edu.ec', 'kguerrero@uteq.edu.ec','nsalinasb@uteq.edu.ec','atorres@uteq.edu.ec',]
         # Crea el objeto del mensaje
         message = MIMEMultipart()
         message['From'] = 'wilsonperezgarcia2000@gmail.com'
@@ -292,11 +292,13 @@ class APIServer(BaseHTTPRequestHandler):
         message['Subject'] = 'UTEQ: SISTEMA DE MONITOREO DE CALIDAD DE AIRE'
 
         # Cuerpo del correo electrónico
-        body = f'Se ha superado el limite seguro de exposicion a los gases. Por favor, si continua asi no permanezcas por mas de 8 horas:\n'
-        body += f'Temperatura: {temperatura}\n'
+        body = f'Se ha superado el limite seguro de exposicion a los gases. Por favor, si continua asi no permanezcas por mas de 8 horas\n'
         body += f'Monóxido de carbono: {monoxido_carbono}\n'
-        body += f'Humedad: {humedad}\n'
         body += f'Dióxido de carbono: {dioxido_carbono}\n'
+        body += f'gas_propano: {gas_propano}\n'
+        body += f'Temperatura: {temperatura}\n'
+        body += f'Humedad: {humedad}\n'
+
         message.attach(MIMEText(body, 'plain'))
 
         # Inicia una conexión SMTP segura con el servidor de Gmail
