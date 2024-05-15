@@ -292,7 +292,7 @@ class APIServer(BaseHTTPRequestHandler):
         message['Subject'] = 'UTEQ: SISTEMA DE MONITOREO DE CALIDAD DE AIRE'
 
         # Cuerpo del correo electrónico
-        body = f'Se ha superado los límite permitido de la medición de monoxido de carbono:{monoxido_carbono}\n\n'
+        body = f'Se ha superado el limite seguro de exposicion a los gases. Por favor, si continua asi no permanezcas por mas de 8 horas:\n'
         body += f'Temperatura: {temperatura}\n'
         body += f'Monóxido de carbono: {monoxido_carbono}\n'
         body += f'Humedad: {humedad}\n'
