@@ -87,6 +87,8 @@ class APIServer(BaseHTTPRequestHandler):
                     self.enviar_correo_alerta(temperatura, monoxido_carbono, humedad, dioxido_carbono, gas_propano)
                 elif int (dioxido_carbono) > 150:
                     self.enviar_correo_alerta(temperatura, monoxido_carbono, humedad, dioxido_carbono, gas_propano)
+                elif int (gas_propano)> 150:
+                    self.enviar_correo_alerta(temperatura, monoxido_carbono, humedad, dioxido_carbono, gas_propano)
                     
                 # Configurar las cabeceras de respuesta
                 self.send_response(200)
@@ -277,20 +279,16 @@ class APIServer(BaseHTTPRequestHandler):
     def enviar_correo_alerta(self, temperatura, monoxido_carbono, humedad, dioxido_carbono, gas_propano):
         print("llega")
         
-        # Configura los parámetros del servidor SMTP de Gmail
         smtp_server = 'smtp.gmail.com'
         smtp_port = 587  # Puerto TLS para Gmail
         sender_email = 'wilsonperezgarcia2000@gmail.com'
         password = 'prak rdzd jzcr abwb'
         
-        # Configura el destinatario del correo electrónico
-        # recipient_email = 'wperezg@uteq.edu.ec, fotospriv21@gmail.com'
         correos = ['wperezg@uteq.edu.ec', 'henry_5198@hotmail.com']
         # Crea el objeto del mensaje
         message = MIMEMultipart()
         message['From'] = 'wilsonperezgarcia2000@gmail.com'
         message['To'] = ', '.join(correos)  # Concatena las direcciones de correo con comas
-        #message['To'] = 'wperezg@uteq.edu.ec, fotospriv21@gmail.com'
         message['Subject'] = 'UTEQ: SISTEMA DE MONITOREO DE CALIDAD DE AIRE'
 
         # Cuerpo del correo electrónico
@@ -301,20 +299,15 @@ class APIServer(BaseHTTPRequestHandler):
         body += f'Dióxido de carbono: {dioxido_carbono}\n'
         message.attach(MIMEText(body, 'plain'))
 
-            
         # Inicia una conexión SMTP segura con el servidor de Gmail
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             print("llega2")
             server.starttls()  # Inicia una conexión segura
             server.login(sender_email, password)  # Inicia sesión en la cuenta de Gmail
             
-            #for correo in correos:
-             #   message['To'] = correo
             text = message.as_string()
             server.sendmail(sender_email, correos, text)  # Envía el correo electrónico
             print("Enviado exitosamente")
-
-      
 
 def run_server(port=8000):
     # Crea una instancia del servidor y especifica el puerto
